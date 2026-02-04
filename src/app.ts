@@ -96,6 +96,14 @@ app.post("/vuln-sql", (req, res) => {
   res.json({ query, message: "(Simulated) SQL executed" });
 });
 
+// Another SQL injection vulnerability
+app.get("/vuln-sqli2", (req, res) => {
+  const id = req.query.id;
+  // Dangerous: direct concatenation of user input
+  const sql = "SELECT * FROM products WHERE id = " + id;
+  res.json({ sql, message: "(Simulated) SQL executed" });
+});
+
 // Vulnerable endpoint: insecure deserialization
 
 // Vulnerable endpoint: path traversal (simulated)
