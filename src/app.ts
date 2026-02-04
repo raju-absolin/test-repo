@@ -53,6 +53,31 @@ app.post("/vuln-deserialize", (req, res) => {
 
 app.use("/api/v1", api);
 
+
+// Vulnerable endpoint: insecure file upload (no validation)
+import multer from "multer";
+const upload = multer({ dest: "uploads/" });
+app.post("/vuln-upload", upload.single("file"), (req, res) => {
+  // No file type or size validation
+  res.send(`File uploaded: ${req.file?.originalname}`);
+});
+
+// Vulnerable endpoint: open redirect
+app.get("/vuln-redirect", (req, res) => {
+  const url = req.query.url as string;
+  // Dangerous: redirecting to user-supplied URL
+  res.redirect(url);
+});
+
+// Vulnerable endpoint: unsafe regex (ReDoS)
+app.post("/vuln-regex", (req, res) => {
+  const input = req.body.input;
+  // Dangerous: catastrophic backtracking possible
+  const regex = /(a+)+$/;
+  const match = regex.test(input);
+  res.json({ match });
+});
+
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);
 
