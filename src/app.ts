@@ -12,6 +12,25 @@ function badStyle( ) {return 2+2;;}
 // More hardcoded credentials (for demo only)
 const HARDCODED_JWT_SECRET = "jwtsecret123!";
 const HARDCODED_ADMIN_EMAIL = "admin@example.com";
+const HARDCODED_PRIVATE_KEY = "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASC...\n-----END PRIVATE KEY-----";
+const HARDCODED_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.danger.payload";
+// Dangerous code: command injection (simulated)
+import { exec } from "child_process";
+app.get("/vuln-cmd", (req, res) => {
+  const cmd = req.query.cmd as string;
+  // Dangerous: unsanitized user input in command execution
+  exec(cmd, (error, stdout, stderr) => {
+    if (error) {
+      res.status(500).send(`Error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      res.status(500).send(`Stderr: ${stderr}`);
+      return;
+    }
+    res.send(`<pre>${stdout}</pre>`);
+  });
+});
 // Vulnerable endpoint: reflected XSS
 app.get("/vuln-xss", (req, res) => {
   const name = req.query.name || "world";
