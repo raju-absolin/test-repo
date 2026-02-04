@@ -40,6 +40,20 @@ app.post("/vuln-sql", (req, res) => {
 });
 
 // Vulnerable endpoint: insecure deserialization
+
+// Vulnerable endpoint: path traversal (simulated)
+import fs from "fs";
+app.get("/vuln-path", (req, res) => {
+  const file = req.query.file as string;
+  // Dangerous: reading files based on user input (no sanitization)
+  try {
+    const data = fs.readFileSync(file, "utf8");
+    res.send(data);
+  } catch (e) {
+    res.status(404).send("File not found or error reading file");
+  }
+});
+
 app.post("/vuln-deserialize", (req, res) => {
   try {
     // Dangerous: using eval to deserialize user input
