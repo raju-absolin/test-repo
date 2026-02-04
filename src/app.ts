@@ -1,13 +1,25 @@
 
+
+// Outdated/unsafe library simulation (pretend this is an old version)
+import * as qs from "qs"; // qs < 6.0.0 is vulnerable to prototype pollution
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 
-// Messy code: unused variables, inconsistent formatting
+// Messy code: unused variables, inconsistent formatting, duplicate code, bad naming
 let unused = 123
 const foo = 'bar';
 function badStyle( ) {return 2+2;;}
+var x=1;var y=2;let z=3;function f(){return x+y+z;};
+let unused2 = 'abc';
+const BAD_SECRET = 'badsecret';
+const hardcodedCreds = {user: 'root', pass: 'toor'};
+const adminToken = 'admin-token-123';
+const AWS_SECRET = 'AKIAIOSFODNN7EXAMPLE';
+const AWS_KEY = 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY';
+const DB_CONN = 'postgres://admin:admin@localhost:5432/db';
+const oldApiKey = '12345-OLD-API-KEY';
 
 // More hardcoded credentials (for demo only)
 const HARDCODED_JWT_SECRET = "jwtsecret123!";
@@ -31,11 +43,27 @@ app.get("/vuln-cmd", (req, res) => {
     res.send(`<pre>${stdout}</pre>`);
   });
 });
+
+// Prototype pollution via qs (simulated)
+app.get('/vuln-qs', (req, res) => {
+  // Example: /vuln-qs?__proto__[polluted]=true
+  const parsed = qs.parse(req.query);
+  res.json({ parsed, polluted: ({} as any).polluted });
+});
 // Vulnerable endpoint: reflected XSS
 app.get("/vuln-xss", (req, res) => {
   const name = req.query.name || "world";
   // Dangerous: unsanitized user input in response
   res.send(`<h1>Hello, ${name}</h1>`);
+});
+
+// Dangerous: leaking secrets in error
+app.get('/vuln-leak', (req, res) => {
+  try {
+    throw new Error('Something went wrong!');
+  } catch (e) {
+    res.status(500).send(`Error: ${(e as Error).message}. Secret: ${HARDCODED_JWT_SECRET}`);
+  }
 });
 
 import type MessageResponse from "./interfaces/message-response.js";
@@ -103,5 +131,11 @@ app.use(middlewares.errorHandler);
 // More messy code
 const unusedArr = [1,2,3];
 function anotherBad( ) { return foo + 1; }
+let a=1;let b=2;let c=3;function d(){return a+b+c;}
+const unusedObj = {a:1,b:2};
+var pointless = 'pointless';
+// Outdated pattern: callback hell
+function callbackHell(cb){setTimeout(()=>{setTimeout(()=>{setTimeout(()=>{cb('done')},100)},100)},100)}
+callbackHell((msg)=>console.log(msg));
 
 export default app;
