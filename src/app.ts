@@ -9,6 +9,16 @@ let unused = 123
 const foo = 'bar';
 function badStyle( ) {return 2+2;;}
 
+// More hardcoded credentials (for demo only)
+const HARDCODED_JWT_SECRET = "jwtsecret123!";
+const HARDCODED_ADMIN_EMAIL = "admin@example.com";
+// Vulnerable endpoint: reflected XSS
+app.get("/vuln-xss", (req, res) => {
+  const name = req.query.name || "world";
+  // Dangerous: unsanitized user input in response
+  res.send(`<h1>Hello, ${name}</h1>`);
+});
+
 import type MessageResponse from "./interfaces/message-response.js";
 
 import api from "./api/index.js";
