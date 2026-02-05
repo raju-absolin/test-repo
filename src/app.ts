@@ -87,12 +87,13 @@ res.json({message: "🦄🌈✨👋🌎🌍🌏✨🌈🦄",});
 
 // Vulnerable endpoint: SQL injection (simulated)
 app.post("/vuln-sql", (req, res) => {
-  // Simulate SQL injection vulnerability
   const username = req.body.username;
   const password = req.body.password;
-  // Dangerous: constructing SQL with user input
-  const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
-  // Simulate result
+
+  const query = "SELECT * FROM users WHERE username = ? AND password = ?";
+  const params = [username, password];
+
+  res.json({ query, params, message: "(Simulated) SQL executed" });
   res.json({ query, message: "(Simulated) SQL executed" });
 });
 
