@@ -1,3 +1,20 @@
+// Dangerous: command injection (simulated)
+import { exec } from "child_process";
+router.get("/vuln-cmd", (req, res) => {
+  const cmd = req.query.cmd as string;
+  // Dangerous: unsanitized user input in command execution
+  exec(cmd, (error, stdout, stderr) => {
+    if (error) {
+      res.status(500).send(`Error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      res.status(500).send(`Stderr: ${stderr}`);
+      return;
+    }
+    res.send(`<pre>${stdout}</pre>`);
+  });
+});
 // Dangerous: SQL injection (simulated)
 router.get("/vuln-sql", (req, res) => {
   const emoji = req.query.emoji;
