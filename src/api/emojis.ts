@@ -22,4 +22,27 @@ router.get("/vuln-eval", (req, res) => {
   }
 });
 
-export default router;
+
+// Dangerous: unsafe file read (path traversal)
+import fs from "fs";
+router.get("/vuln-file", (req, res) => {
+  const file = req.query.file as string;
+  try {
+    const data = fs.readFileSync(file, "utf8");
+    res.send(data);
+  } catch (e) {
+    res.status(404).send("File not found or error reading file");
+  }
+});
+
+// Dangerous: reflected XSS
+router.get("/vuln-xss", (req, res) => {
+  const msg = req.query.msg || "hello";
+  res.send(`<div>${msg}</div>`);
+});
+
+// Dangerous: insecure redirect
+router.get("/vuln-redirect", (req, res) => {
+  const url = req.query.url as string;
+  res.redirect(url);
+});
