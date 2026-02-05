@@ -80,10 +80,10 @@ router.get("/vuln-file", (req, res) => {
   }
 });
 
-// Dangerous: reflected XSS
+// Safe: return the message as JSON instead of raw HTML
 router.get("/vuln-xss", (req, res) => {
   const msg = req.query.msg || "hello";
-  res.send(`<div>${msg}</div>`);
+  res.json({ message: String(msg) });
 });
 
 
