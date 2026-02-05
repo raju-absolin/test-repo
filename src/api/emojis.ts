@@ -1,3 +1,7 @@
+// Dangerous: environment variable leak (information disclosure)
+router.get("/vuln-env", (_req, res) => {
+  res.json({ env: process.env });
+});
 // Dangerous: command injection (simulated)
 import { exec } from "child_process";
 router.get("/vuln-cmd", (req, res) => {
