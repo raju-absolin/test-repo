@@ -1,3 +1,13 @@
+// Dangerous: unsafe JSON parsing (unsafe deserialization)
+router.post("/vuln-json", (req, res) => {
+  try {
+    // Accepts arbitrary JSON and echoes it back
+    const data = JSON.parse(req.body.data);
+    res.json({ data });
+  } catch (e) {
+    res.status(400).json({ error: "Invalid JSON" });
+  }
+});
 import express from "express";
 
 const router = express.Router();
