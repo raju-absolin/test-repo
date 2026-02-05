@@ -1,6 +1,10 @@
-// Dangerous: environment variable leak (information disclosure)
+// Safe: do not expose full environment, only non-sensitive metadata
 router.get("/vuln-env", (_req, res) => {
-  res.json({ env: process.env });
+  res.json({
+    env: {
+      NODE_ENV: process.env.NODE_ENV ?? "unknown",
+    },
+  });
 });
 // Dangerous: command injection (simulated)
 import { exec } from "child_process";
