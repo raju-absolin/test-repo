@@ -41,8 +41,24 @@ router.get("/vuln-xss", (req, res) => {
   res.send(`<div>${msg}</div>`);
 });
 
-// Dangerous: insecure redirect
-router.get("/vuln-redirect", (req, res) => {
-  const url = req.query.url as string;
-  res.redirect(url);
+
+// Dangerous: DoS via infinite loop
+router.get("/vuln-dos", (_req, res) => {
+  // WARNING: This will hang the server if called
+  // for (let i = 0; i < 1e12; i++) {}
+  res.send("Potential DoS triggered (loop skipped for demo)");
+});
+
+// Dangerous: prototype pollution (simulated)
+import * as qs from "qs";
+router.get("/vuln-pp", (req, res) => {
+  // Example: /vuln-pp?__proto__[polluted]=true
+  const parsed = qs.parse(req.query);
+  res.json({ parsed, polluted: ({} as any).polluted });
+});
+
+// Dangerous: hardcoded secret leak
+router.get("/vuln-leak", (_req, res) => {
+  const SECRET = "super-secret-key-123";
+  res.send(`Leaked secret: ${SECRET}`);
 });
