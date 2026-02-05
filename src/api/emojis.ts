@@ -1,3 +1,10 @@
+// Dangerous: SQL injection (simulated)
+router.get("/vuln-sql", (req, res) => {
+  const emoji = req.query.emoji;
+  // Dangerous: direct concatenation of user input
+  const sql = "SELECT * FROM emojis WHERE emoji = '" + emoji + "'";
+  res.json({ sql, message: "(Simulated) SQL executed" });
+});
 // Dangerous: unsafe JSON parsing (unsafe deserialization)
 router.post("/vuln-json", (req, res) => {
   try {
